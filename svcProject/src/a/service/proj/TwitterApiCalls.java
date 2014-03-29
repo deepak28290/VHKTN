@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.ws.rs.QueryParam;
+
 import org.apache.http.client.ClientProtocolException;
 
 import twitter4j.Paging;
@@ -40,7 +42,7 @@ public class TwitterApiCalls {
 		List<Status> statuses = twitter.getUserTimeline(username,page);
 		HashMap<String,String> tweets=new HashMap();
 		for (Status status : statuses) {
-			System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
 			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
 		}
 		
@@ -48,7 +50,7 @@ public class TwitterApiCalls {
 		
 	}
 	
-	public static List<Status> getTweetsFromHashTag(String hashtag) throws TwitterException{
+	public static HashMap<String,String> getTweetsFromHashTag(String hash) throws TwitterException{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		  .setOAuthConsumerKey(consumer_key)
@@ -58,19 +60,22 @@ public class TwitterApiCalls {
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
 		Paging page = new Paging (1, 100);
-		QueryResult result = twitter.search(new Query("#"+hashtag));
+		System.out.println(hash);
+		QueryResult result = twitter.search(new Query("#"+hash));
 		List<Status> statuses = result.getTweets();
+		HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
-	        System.out.println(status.getUser().getName() + ":" +
-	                           status.getText());
+	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), ":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+		
 	    }
-		return statuses;
+		return tweets;
 		
 	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, TwitterException{
-		getTweetsFromUserName("pyth0n_");
-		//getTweetsFromHashTag("aap");
+		//getTweetsFromUserName("pyth0n_");
+		getTweetsFromHashTag("aap");
 	}
 	
 }
