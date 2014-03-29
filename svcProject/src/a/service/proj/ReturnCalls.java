@@ -39,7 +39,8 @@ public class ReturnCalls {
 			System.out.println(hash);	
 		  return TwitterApiCalls.getTweetsFromHashTag(hash);
 	  }
-	  @GET
+	  
+	 @GET
 	  @Path("/usertweet")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
@@ -51,10 +52,18 @@ public class ReturnCalls {
 		//  return null;
 	  }
 	  
+	  @GET
+	  @Path("/partytweets")
+	  @Produces(MediaType.APPLICATION_JSON)
+	  @Consumes(MediaType.APPLICATION_JSON)
+	  public HashMap<String, String> getTweetsForParty(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
+		//  String json = new Gson().toJson(TwitterApiCalls.getTweetsFromUserName(user) );
+		 // JSONArray jsonA = JSONArray.fromObject(TwitterApiCalls.getTweetsFromUserName(user));
+		  return TwitterApiCalls.getTweetsFromUserName(party);
+		  
+		//  return null;
+	  }
 	 
-
-	 
-
 	 	 
 	  @GET
 	  @Produces(MediaType.TEXT_HTML)
