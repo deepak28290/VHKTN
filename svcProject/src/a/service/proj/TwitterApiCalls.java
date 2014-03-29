@@ -1,16 +1,20 @@
 package a.service.proj;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 
+import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.URLEntity;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterApiCalls {
@@ -22,7 +26,7 @@ public class TwitterApiCalls {
 	
 	String twitter_uri="https://www.api.twitter.com/1.1/";
 	
-	public static List<Status> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
+	public static HashMap<String,String> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
 	
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
@@ -31,14 +35,16 @@ public class TwitterApiCalls {
 		  .setOAuthAccessToken(access_token)
 		  .setOAuthAccessTokenSecret(access_token_secret);
 		TwitterFactory tf = new TwitterFactory(cb.build());
+		Paging page = new Paging (1, 100);
 		Twitter twitter = tf.getInstance();
-		List<Status> statuses = twitter.getUserTimeline(username);
-	    for (Status status : statuses) {
-	        System.out.println(status.getUser().getName() + ":" +
-	                           status.getText());
-	    }
+		List<Status> statuses = twitter.getUserTimeline(username,page);
+		HashMap<String,String> tweets=new HashMap();
+		for (Status status : statuses) {
+			System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
+		}
 		
-		return statuses;
+		return tweets;
 		
 	}
 	
@@ -51,7 +57,7 @@ public class TwitterApiCalls {
 		  .setOAuthAccessTokenSecret(access_token_secret);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
-		
+		Paging page = new Paging (1, 100);
 		QueryResult result = twitter.search(new Query("#"+hashtag));
 		List<Status> statuses = result.getTweets();
 	    for (Status status : statuses) {
@@ -63,8 +69,8 @@ public class TwitterApiCalls {
 	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, TwitterException{
-		//System.out.println(getTweetsFromUserName("pyth0n_"));
-		getTweetsFromHashTag("aap");
+		getTweetsFromUserName("pyth0n_");
+		//getTweetsFromHashTag("aap");
 	}
 	
 }
