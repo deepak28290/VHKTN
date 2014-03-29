@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -28,24 +29,33 @@ import twitter4j.TwitterException;
 
 //Sets the path to base URL + /hello
 @XmlRootElement
-@Path("/hello")
+@Path("/moodn")
 public class ReturnCalls {
-
-	  @GET
+	 @GET
+	  @Path("/hashtweet")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getAllTweetsForUser(String user) throws ClientProtocolException, IOException, TwitterException {
+	  public HashMap<String, String> getAllTweetsForHashtag(@QueryParam(value = "hash") String hash) throws ClientProtocolException, IOException, TwitterException {
+			System.out.println(hash);	
+		  return TwitterApiCalls.getTweetsFromHashTag(hash);
+	  }
+	  @GET
+	  @Path("/usertweet")
+	  @Produces(MediaType.APPLICATION_JSON)
+	  @Consumes(MediaType.APPLICATION_JSON)
+	  public HashMap<String, String> getAllTweetsForUser(@QueryParam(value = "user") String user) throws ClientProtocolException, IOException, TwitterException {
 		//  String json = new Gson().toJson(TwitterApiCalls.getTweetsFromUserName(user) );
 		 // JSONArray jsonA = JSONArray.fromObject(TwitterApiCalls.getTweetsFromUserName(user));
 		  return TwitterApiCalls.getTweetsFromUserName(user);
+		  
+		//  return null;
 	  }
+	  
+	 
 
-	  @GET
-	  @Produces(MediaType.TEXT_XML)
-	  public String getAllTweetsForHashTag() {
-	    return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
-	  }
+	 
 
+	 	 
 	  @GET
 	  @Produces(MediaType.TEXT_HTML)
 	  public String sayHtmlHello() {
