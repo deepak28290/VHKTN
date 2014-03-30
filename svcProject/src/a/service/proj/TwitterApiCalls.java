@@ -36,7 +36,7 @@ public class TwitterApiCalls {
 	
 	String twitter_uri="https://www.api.twitter.com/1.1/";
 	
-	public static HashMap<String,String> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
+	public static HashMap<String,List<String>> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
 	
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
@@ -48,11 +48,15 @@ public class TwitterApiCalls {
 		Paging page = new Paging (1, 100);
 		Twitter twitter = tf.getInstance();
 		List<Status> statuses = twitter.getUserTimeline(username,page);
-		HashMap<String,String> tweets=new HashMap();
+		HashMap<String,List<String>> tweets=new HashMap();
+		
 		for (Status status : statuses) {
+			List<String> list=new ArrayList<String>();
 			
-			System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
-			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
+			System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			list.add(status.getCreatedAt().toString());
+			list.add("https://twitter.com/"+username+"/status/"+status.getId());
+			tweets.put(status.getText(), list);
 		}
 		
 		return tweets;
@@ -75,7 +79,7 @@ public class TwitterApiCalls {
 		HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
 	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
-			tweets.put(status.getText(), ":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), "https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 		
 	    }
 		return tweets;
@@ -98,7 +102,7 @@ public class TwitterApiCalls {
 		HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
 	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
-			tweets.put(status.getText(), ":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), "https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 		
 	    }
 		return tweets;
@@ -159,9 +163,9 @@ public class TwitterApiCalls {
 	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, TwitterException{
-		//getTweetsFromUserName("pyth0n_");
-		getTweetsFromHashTag("aap");
-		getTweetsFromJunta("bjp");
+		getTweetsFromUserName("pyth0n_");
+		//getTweetsFromHashTag("aap");
+		//getTweetsFromJunta("bjp");
 	}
 	
 }
