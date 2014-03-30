@@ -69,5 +69,14 @@ public class ReturnCalls {
 		  
 		//  return null;
 	  }
-
+	  @GET
+	  @Path("/getTweets")
+	  @Produces(MediaType.APPLICATION_JSON)
+	  @Consumes(MediaType.TEXT_PLAIN)
+	  public List<String> getTweetsWithSentiments(@QueryParam(value = "party") String party, 
+			  @QueryParam(value = "sentiment") int sentiment, 
+			  @QueryParam(value = "tweet_from") int tweet_from ) throws ClientProtocolException, TwitterException, IOException{
+		   return UpdateTweetData.getTweetsWithSentiment(party, sentiment, tweet_from);
+		   
+	  }
 }

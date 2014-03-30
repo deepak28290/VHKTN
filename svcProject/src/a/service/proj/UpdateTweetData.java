@@ -1,6 +1,7 @@
 package a.service.proj;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ public class UpdateTweetData {
 	static List<String> userNameMapping = new ArrayList<String>();
 	
 	public static List<String> getPublicTweets(String partyName) throws TwitterException{
+		updateHashTagMap();
 		List tweetList = new ArrayList<String>();
 		String partyNameToLower = partyName.toLowerCase();
 				
@@ -42,12 +44,13 @@ public class UpdateTweetData {
 	}
 	
 	public static List<String> getCriticTweets(String partyName) throws ClientProtocolException, IOException, TwitterException{
+		updateUserNameMapping();
 		List<String> tweetList = new ArrayList<String>();
 		String partyNameToLower = partyName.toLowerCase();
 		List<String> hashTags = hashTagMapping.get(partyNameToLower);
 		
 		for (String userName : userNameMapping){
-			HashMap<String,String> tweets = TwitterApiCalls.getTweetsFromUserName(userName);
+			HashMap<String,String> tweets = TwitterApiCalls.getTweetsFromUserWoTime(userName);
 			Set<String> tweetSet = tweets.keySet();
 			List<String> list = new ArrayList(tweetSet);
 			for(String hashTag: hashTags){
@@ -62,7 +65,7 @@ public class UpdateTweetData {
 		return tweetList;
 	}
 	
-	public List<String> getTweetsWithSentiment(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
+	public static List<String> getTweetsWithSentiment(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
 		//Sentiment: 0 for positive, 1 for negative and 2 for neutral
 		//tweet_from: 0 for public and 1 for junta
 		List<String> tweetList = null;
@@ -74,9 +77,13 @@ public class UpdateTweetData {
 		
 		List<String> list = new ArrayList();
 		
-		for (String tweet : tweetList){
+		//for (String tweet : tweetList){
 			//Call the Alchemy API, if the sentiment of the tweet matches with the 
 			//required sentiment, add it to the list
+		for(int i = 0; i < 10; i++ ){
+			String tweet = tweetList.get(i);
+			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(tweet,"UTF-8")) == sentiment )
+				list.add(tweet);
 		}
 		
 		return list;
@@ -112,10 +119,6 @@ public class UpdateTweetData {
 		userNameMapping.add("StarNews");
 		userNameMapping.add("ZeeNews");
 		userNameMapping.add("ndtv");
-	}
-	
-	public static int checkSentiment(Status status){
-		return 1;
 	}
 	
 	public static void main(String args[]) throws TwitterException, ClientProtocolException, IOException {

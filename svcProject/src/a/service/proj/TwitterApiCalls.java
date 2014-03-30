@@ -36,8 +36,28 @@ public class TwitterApiCalls {
 	
 	String twitter_uri="https://www.api.twitter.com/1.1/";
 	
+	public static HashMap<String,String> getTweetsFromUserWoTime(String username) throws ClientProtocolException, IOException, TwitterException{
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true)
+		  .setOAuthConsumerKey(consumer_key)
+		  .setOAuthConsumerSecret(consumer_secret)
+		  .setOAuthAccessToken(access_token)
+		  .setOAuthAccessTokenSecret(access_token_secret);
+		TwitterFactory tf = new TwitterFactory(cb.build());
+		Paging page = new Paging (1, 100);
+		Twitter twitter = tf.getInstance();
+		List<Status> statuses = twitter.getUserTimeline(username,page);
+		HashMap<String,String> tweets=new HashMap();
+		for (Status status : statuses) {
+
+			System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
+		}
+
+		return tweets;	
+	}
 	public static HashMap<String,List<String>> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
-	
+		
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		  .setOAuthConsumerKey(consumer_key)
@@ -62,7 +82,6 @@ public class TwitterApiCalls {
 		return tweets;
 		
 	}
-	
 	public static HashMap<String,String> getTweetsFromHashTag(String hash) throws TwitterException{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
