@@ -44,7 +44,7 @@ public class ReturnCalls {
 	  @Path("/usertweet")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getAllTweetsForUser(@QueryParam(value = "user") String user) throws ClientProtocolException, IOException, TwitterException {
+	  public HashMap<String, List<String>> getAllTweetsForUser(@QueryParam(value = "user") String user) throws ClientProtocolException, IOException, TwitterException {
 		  return TwitterApiCalls.getTweetsFromUserName(user);
 		  
 		//  return null;
