@@ -2,6 +2,7 @@ package a.service.proj;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.http.client.ClientProtocolException;
 
+import twitter4j.HashtagEntity;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -26,6 +28,12 @@ public class TwitterApiCalls {
 	static String access_token="89261937-BIF7heMBid1BsT9VUyMqSYqfCFrLEYn8abUrnBQcJ";
 	static String access_token_secret="w80wq8XLz3LrxAG2y1WrgQz73YZCGyVkyOfURGa5NiJyJ";
 	
+	static List<String> bjpHashTags = Arrays.asList("modi", "bjp");//, "How", "Are", "You");
+	static List<String> aapHashTags = Arrays.asList("aap", "kejriwal");//, "How", "Are", "You");
+	static List<String> congHashTags = Arrays.asList("congress", "rahul");//, "How", "Are", "You");
+	
+	static List<String> criticHandles =Arrays.asList("sardesairajdeep", "aajtak");//, "StarNews", "ndtv", "ibnlive");
+	
 	String twitter_uri="https://www.api.twitter.com/1.1/";
 	
 	public static HashMap<String,String> getTweetsFromUserName(String username) throws ClientProtocolException, IOException, TwitterException{
@@ -42,6 +50,7 @@ public class TwitterApiCalls {
 		List<Status> statuses = twitter.getUserTimeline(username,page);
 		HashMap<String,String> tweets=new HashMap();
 		for (Status status : statuses) {
+			
 			System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
 			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
 		}
@@ -73,10 +82,86 @@ public class TwitterApiCalls {
 		
 	}
 	
+	public static HashMap<String,String> getTweetsFromSearch(String keyword) throws TwitterException{
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		cb.setDebugEnabled(true)
+		  .setOAuthConsumerKey(consumer_key)
+		  .setOAuthConsumerSecret(consumer_secret)
+		  .setOAuthAccessToken(access_token)
+		  .setOAuthAccessTokenSecret(access_token_secret);
+		TwitterFactory tf = new TwitterFactory(cb.build());
+		Twitter twitter = tf.getInstance();
+		Paging page = new Paging (1, 100);
+		System.out.println(keyword);
+		QueryResult result = twitter.search(new Query(keyword));
+		List<Status> statuses = result.getTweets();
+		HashMap<String,String> tweets=new HashMap();
+	    for (Status status : statuses) {
+	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), ":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+		
+	    }
+		return tweets;
+		
+	}
+	
+	public static HashMap<String,String> getTweetsFromJunta(String party) throws TwitterException{
+		//based on hashtags
+		HashMap<String,String> combinedTweets=new HashMap<>();
+		int i=0;
+		if(party.equals("bjp")){
+		while(i<bjpHashTags.size()){
+			combinedTweets.putAll(getTweetsFromHashTag(bjpHashTags.get(i)));
+			i++;
+		}
+		i=0;
+		}else if(party.equals("congress")){
+			while(i<congHashTags.size()){
+				combinedTweets.putAll(getTweetsFromHashTag(congHashTags.get(i)));
+				i++;
+			}
+			i=0;
+		}else if(party.equals("aap")){
+			while(i<aapHashTags.size()){
+				combinedTweets.putAll(getTweetsFromHashTag(aapHashTags.get(i)));
+				i++;
+			}
+			i=0;
+		}
+		
+		return combinedTweets;
+	}
+	
+	public static HashMap<String,String> getTweetsFromCritics(String party) throws TwitterException{
+		//based on hashtags and critic tags
+		HashMap<String,String> combinedTweets=new HashMap<>();
+		int i=0,j=0;
+		if(party.equals("bjp")){
+		for(i=0;i<bjpHashTags.size();i++){
+			for(j=0;j<criticHandles.size();j++){
+				combinedTweets.putAll(getTweetsFromSearch(bjpHashTags.get(i)+" @"+criticHandles.get(j)));
+			}
+		}
+		}else if(party.equals("congress")){
+			for(i=0;i<congHashTags.size();i++){
+				for(j=0;j<criticHandles.size();j++){
+					combinedTweets.putAll(getTweetsFromSearch(congHashTags.get(i)+" @"+criticHandles.get(j)));
+				}
+			}}else if(party.equals("aap")){
+				for(i=0;i<aapHashTags.size();i++){
+					for(j=0;j<criticHandles.size();j++){
+						combinedTweets.putAll(getTweetsFromSearch(aapHashTags.get(i)+" @"+criticHandles.get(j)));
+					}
+				}
+		}
+		
+		return combinedTweets;
+	}
 	
 	public static void main(String[] args) throws ClientProtocolException, IOException, TwitterException{
 		//getTweetsFromUserName("pyth0n_");
 		getTweetsFromHashTag("aap");
+		getTweetsFromJunta("bjp");
 	}
 	
 }
