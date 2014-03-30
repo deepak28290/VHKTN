@@ -79,4 +79,12 @@ public class ReturnCalls {
 		   return UpdateTweetData.getTweetsWithSentiment(party, sentiment, tweet_from);
 		   
 	  }
+	  
+	  @GET
+	  @Path("/getPercentage")
+	  @Produces(MediaType.TEXT_PLAIN)
+	  @Consumes(MediaType.TEXT_PLAIN)
+	  public String getNumbers(@QueryParam(value= "party") String party) throws ClientProtocolException, TwitterException, IOException{
+		  return UpdateTweetData.getSentimentNumbers(party);
+	  }
 }

@@ -1,5 +1,6 @@
 package a.service.proj;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -88,31 +89,75 @@ public class UpdateTweetData {
 		
 		return list;
 	}
-	public static String getSentimentNumbers(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
+	public static String getSentimentNumbers(String partyName) throws TwitterException, ClientProtocolException, IOException{
 		//Sentiment: 0 for positive, 1 for negative and 2 for neutral
 		//tweet_from: 0 for public and 1 for junta
 		HashMap<String, List<String>> tweetList = null;
 		
-		if(tweet_from == 0)
-			tweetList = getPublicTweets(partyName);
-		else
-			tweetList = getCriticTweets(partyName);
+		tweetList = getPublicTweets(partyName);
 		
 		HashMap<String, List<String>> list = new HashMap();
 		
 		Set<String> keySet = tweetList.keySet();
 		List<String> keyList = new ArrayList<String>(keySet);
 		
-		int count = 0;
+		int jpos = 0,jneg=0,jneut=0,count=0;
 		
 		for(int i=0; i<keyList.size() && count<10 ; i++){
 			count++;
-			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == sentiment)
-					list.put(keyList.get(i), tweetList.get(keyList.get(i)));
+			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == 0){
+				jneut++;
+			}else  	if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == 1){
+				jpos++;
+			}else 	if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == -1){
+				jneg++;
+			} 
+
 		}
 		
-		return null;
+		tweetList = getCriticTweets(partyName);
+		
+		keySet = tweetList.keySet();
+		keyList = new ArrayList<String>(keySet);
+		
+		int cpos = 0,cneg=0,cneut=0;
+		count = 0;
+		
+		for(int i=0; i<keyList.size() && count<10 ; i++){
+			count++;
+			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == 0){
+				cneut++;
+			}else  	if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == 1){
+				cpos++;
+			}else 	if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == -1){
+				cneg++;
+			} 
+		}
+		
+		int tot = 10;
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(getPercantage(jpos,tot));
+		sb.append(",");
+		sb.append(getPercantage(jneut,tot));
+		sb.append(",");
+		sb.append(getPercantage(jneg,tot));
+		sb.append(",");
+		
+		sb.append(getPercantage(cpos,tot));
+		sb.append(",");
+		sb.append(getPercantage(cneut,tot));
+		sb.append(",");
+		sb.append(getPercantage(cneg,tot));
+		
+		return sb.toString();
 	}
+	
+	public static int getPercantage(int a, int tot){
+		//System.out.println((a* 100)/tot);
+		return ((a* 100)/tot);
+	}
+	
 	public int countTweets(String partyName, int sentiment, int tweet_from){
 		int sentiments = 0;
 		return sentiments;
@@ -150,18 +195,12 @@ public class UpdateTweetData {
 		userNameMapping.add("ndtv");
 	}
 	
-	public static String getSentimentNumbers(String partyName){
-		int [] count = new int[6];
-		for(int i=0; i<6; i++){
-			//HashMap<String, List<String>> map = getTweetsWithSentiment(partyName, )
-		}
-		return null;
-	}
 	
 	public static void main(String args[]) throws TwitterException, ClientProtocolException, IOException {
-		updateHashTagMap();
+	/*	updateHashTagMap();
 		updateUserNameMapping();
-		System.out.println(getTweetsWithSentiment("bjp",0,0));
+		getSentimentNumbers("bjp");*/
+		getPercantage(10, 40);
 	}
 	
 }
