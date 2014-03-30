@@ -45,31 +45,29 @@ public class ReturnCalls {
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
 	  public HashMap<String, String> getAllTweetsForUser(@QueryParam(value = "user") String user) throws ClientProtocolException, IOException, TwitterException {
-		//  String json = new Gson().toJson(TwitterApiCalls.getTweetsFromUserName(user) );
-		 // JSONArray jsonA = JSONArray.fromObject(TwitterApiCalls.getTweetsFromUserName(user));
 		  return TwitterApiCalls.getTweetsFromUserName(user);
 		  
 		//  return null;
 	  }
 	  
 	  @GET
-	  @Path("/partytweets")
+	  @Path("/critictweets")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getTweetsForParty(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
-		//  String json = new Gson().toJson(TwitterApiCalls.getTweetsFromUserName(user) );
-		 // JSONArray jsonA = JSONArray.fromObject(TwitterApiCalls.getTweetsFromUserName(user));
-		  return TwitterApiCalls.getTweetsFromUserName(party);
+	  public HashMap<String, String> getTweetsFromCritics(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
+		  return TwitterApiCalls.getTweetsFromCritics(party);
 		  
 		//  return null;
 	  }
 	 
-	 	 
 	  @GET
-	  @Produces(MediaType.TEXT_HTML)
-	  public String sayHtmlHello() {
-	    return "<html> " + "<title>" + "Hello Jersey" + "</title>"
-	        + "<body><h1>" + "Hello Jersey" + "</body></h1>" + "</html> ";
+	  @Path("/juntatweets")
+	  @Produces(MediaType.APPLICATION_JSON)
+	  @Consumes(MediaType.APPLICATION_JSON)
+	  public HashMap<String, String> getTweetsFromJunta(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
+		  return TwitterApiCalls.getTweetsFromJunta(party);
+		  
+		//  return null;
 	  }
 
 }
