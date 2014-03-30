@@ -50,7 +50,7 @@ public class TwitterApiCalls {
 		HashMap<String,String> tweets=new HashMap();
 		for (Status status : statuses) {
 
-			System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			//System.out.println(status.getUser().getScreenName() + ":" +  status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
 			tweets.put(status.getText(), ":https://twitter.com/"+username+"/status/"+status.getId());
 		}
 
@@ -73,8 +73,9 @@ public class TwitterApiCalls {
 		for (Status status : statuses) {
 			List<String> list=new ArrayList<String>();
 			
-			System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
-			list.add(status.getCreatedAt().toString());
+			//System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			System.out.println(String.valueOf(status.getCreatedAt().getTime()));
+			list.add(String.valueOf(status.getCreatedAt().getTime()));
 			list.add("https://twitter.com/"+username+"/status/"+status.getId());
 			tweets.put(status.getText(), list);
 		}
@@ -82,7 +83,7 @@ public class TwitterApiCalls {
 		return tweets;
 		
 	}
-	public static HashMap<String,String> getTweetsFromHashTag(String hash) throws TwitterException{
+	public static HashMap<String,List<String>> getTweetsFromHashTag(String hash) throws TwitterException{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		  .setOAuthConsumerKey(consumer_key)
@@ -95,17 +96,28 @@ public class TwitterApiCalls {
 		System.out.println(hash);
 		QueryResult result = twitter.search(new Query("#"+hash));
 		List<Status> statuses = result.getTweets();
-		HashMap<String,String> tweets=new HashMap();
+		/*HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
-	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+	    	//System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 			tweets.put(status.getText(), "https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 		
-	    }
+	    }*/
+		HashMap<String,List<String>> tweets=new HashMap();
+		
+		for (Status status : statuses) {
+			List<String> list=new ArrayList<String>();
+			
+			//System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			System.out.println(String.valueOf(status.getCreatedAt().getTime()));
+			list.add(String.valueOf(status.getCreatedAt().getTime()));
+			list.add("https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), list);
+		}
 		return tweets;
 		
 	}
 	
-	public static HashMap<String,String> getTweetsFromSearch(String keyword) throws TwitterException{
+	public static HashMap<String,List<String>> getTweetsFromSearch(String keyword) throws TwitterException{
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
 		  .setOAuthConsumerKey(consumer_key)
@@ -118,19 +130,30 @@ public class TwitterApiCalls {
 		System.out.println(keyword);
 		QueryResult result = twitter.search(new Query(keyword));
 		List<Status> statuses = result.getTweets();
-		HashMap<String,String> tweets=new HashMap();
+		/*HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
-	    	System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+	    	//System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 			tweets.put(status.getText(), "https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 		
-	    }
+	    }*/
+		HashMap<String,List<String>> tweets=new HashMap();
+		
+		for (Status status : statuses) {
+			List<String> list=new ArrayList<String>();
+			
+			//System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
+			System.out.println(String.valueOf(status.getCreatedAt().getTime()));
+			list.add(String.valueOf(status.getCreatedAt().getTime()));
+			list.add("https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
+			tweets.put(status.getText(), list);
+		}
 		return tweets;
 		
 	}
 	
-	public static HashMap<String,String> getTweetsFromJunta(String party) throws TwitterException{
+	public static HashMap<String,List<String>> getTweetsFromJunta(String party) throws TwitterException{
 		//based on hashtags
-		HashMap<String,String> combinedTweets=new HashMap<>();
+		HashMap<String,List<String>> combinedTweets=new HashMap<>();
 		int i=0;
 		if(party.equals("bjp")){
 		while(i<bjpHashTags.size()){
@@ -155,9 +178,9 @@ public class TwitterApiCalls {
 		return combinedTweets;
 	}
 	
-	public static HashMap<String,String> getTweetsFromCritics(String party) throws TwitterException{
+	public static HashMap<String,List<String>> getTweetsFromCritics(String party) throws TwitterException{
 		//based on hashtags and critic tags
-		HashMap<String,String> combinedTweets=new HashMap<>();
+		HashMap<String,List<String>> combinedTweets=new HashMap<>();
 		int i=0,j=0;
 		if(party.equals("bjp")){
 		for(i=0;i<bjpHashTags.size();i++){

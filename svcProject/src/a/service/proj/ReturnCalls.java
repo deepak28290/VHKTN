@@ -35,7 +35,7 @@ public class ReturnCalls {
 	  @Path("/hashtweet")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getAllTweetsForHashtag(@QueryParam(value = "hash") String hash) throws ClientProtocolException, IOException, TwitterException {
+	  public HashMap<String, List<String>> getAllTweetsForHashtag(@QueryParam(value = "hash") String hash) throws ClientProtocolException, IOException, TwitterException {
 			System.out.println(hash);	
 		  return TwitterApiCalls.getTweetsFromHashTag(hash);
 	  }
@@ -54,7 +54,7 @@ public class ReturnCalls {
 	  @Path("/critictweets")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getTweetsFromCritics(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
+	  public HashMap<String, List<String>> getTweetsFromCritics(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
 		  return TwitterApiCalls.getTweetsFromCritics(party);
 		  
 		//  return null;
@@ -64,16 +64,16 @@ public class ReturnCalls {
 	  @Path("/juntatweets")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.APPLICATION_JSON)
-	  public HashMap<String, String> getTweetsFromJunta(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
+	  public HashMap<String, List<String>> getTweetsFromJunta(@QueryParam(value = "party") String party) throws ClientProtocolException, IOException, TwitterException {
 		  return TwitterApiCalls.getTweetsFromJunta(party);
 		  
-		//  return null;
+		  //return null;
 	  }
 	  @GET
 	  @Path("/getTweets")
 	  @Produces(MediaType.APPLICATION_JSON)
 	  @Consumes(MediaType.TEXT_PLAIN)
-	  public List<String> getTweetsWithSentiments(@QueryParam(value = "party") String party, 
+	  public HashMap<String, List<String>> getTweetsWithSentiments(@QueryParam(value = "party") String party, 
 			  @QueryParam(value = "sentiment") int sentiment, 
 			  @QueryParam(value = "tweet_from") int tweet_from ) throws ClientProtocolException, TwitterException, IOException{
 		   return UpdateTweetData.getTweetsWithSentiment(party, sentiment, tweet_from);

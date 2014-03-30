@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -23,41 +24,38 @@ public class UpdateTweetData {
 	static Map<String, List<String>> hashTagMapping = new HashMap<String, List<String>>();
 	static List<String> userNameMapping = new ArrayList<String>();
 	
-	public static List<String> getPublicTweets(String partyName) throws TwitterException{
+	public static HashMap<String, List<String>> getPublicTweets(String partyName) throws TwitterException{
 		updateHashTagMap();
-		List tweetList = new ArrayList<String>();
 		String partyNameToLower = partyName.toLowerCase();
 				
 		List<String> hashTags = hashTagMapping.get(partyNameToLower);
+		HashMap<String, List<String>> tweets = new HashMap<>();
+		HashMap<String, List<String>> tweetList = new HashMap<>();
 		
-		for (String hashTag : hashTags){
-			HashMap<String, String> tweets = TwitterApiCalls.getTweetsFromHashTag(hashTag);
-			//System.out.println("TESTING");
-			Set tweetSet = tweets.keySet();
-			List list = new ArrayList(tweetSet);
-				for (int i=0;i<list.size();i++){
-				tweetList.add(list.get(i));
-				}
+		for (int i=0; i<hashTags.size(); i++){
+			tweets = TwitterApiCalls.getTweetsFromHashTag(hashTags.get(i));
+			tweetList.putAll(tweets);
 		}
 		
 		return tweetList;
 	}
 	
-	public static List<String> getCriticTweets(String partyName) throws ClientProtocolException, IOException, TwitterException{
+	public static HashMap<String, List<String>> getCriticTweets(String partyName) throws ClientProtocolException, IOException, TwitterException{
 		updateUserNameMapping();
-		List<String> tweetList = new ArrayList<String>();
+		HashMap<String, List<String>> tweetList = new HashMap<String, List<String>>();
 		String partyNameToLower = partyName.toLowerCase();
 		List<String> hashTags = hashTagMapping.get(partyNameToLower);
 		
 		for (String userName : userNameMapping){
-			HashMap<String,String> tweets = TwitterApiCalls.getTweetsFromUserWoTime(userName);
-			Set<String> tweetSet = tweets.keySet();
-			List<String> list = new ArrayList(tweetSet);
-			for(String hashTag: hashTags){
-				for(int i=0; i<list.size(); i++){
-					String str = list.get(i);
-					if(str.toLowerCase().contains(hashTag))
-						tweetList.add(str);
+			HashMap<String,List<String>> tweets = TwitterApiCalls.getTweetsFromUserName(userName);
+			
+			Set<String> keySet = tweets.keySet();
+			List<String> keyList = new ArrayList<String>(keySet);
+			
+			for(int i = 0; i<keyList.size(); i++){
+				for(int j=0; j<hashTags.size(); j++){
+					if(keyList.get(i).contains(hashTags.get(j)))
+						tweetList.put(keyList.get(i), tweets.get(keyList.get(i)));
 				}
 			}
 		}
@@ -65,28 +63,59 @@ public class UpdateTweetData {
 		return tweetList;
 	}
 	
-	public static List<String> getTweetsWithSentiment(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
+	public static HashMap<String, List<String>> getTweetsWithSentiment(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
 		//Sentiment: 0 for positive, 1 for negative and 2 for neutral
 		//tweet_from: 0 for public and 1 for junta
-		List<String> tweetList = null;
+		HashMap<String, List<String>> tweetList = null;
 		
 		if(tweet_from == 0)
 			tweetList = getPublicTweets(partyName);
 		else
 			tweetList = getCriticTweets(partyName);
 		
-		List<String> list = new ArrayList();
+		HashMap<String, List<String>> list = new HashMap();
 		
-		//for (String tweet : tweetList){
-			//Call the Alchemy API, if the sentiment of the tweet matches with the 
-			//required sentiment, add it to the list
-		for(int i = 0; i < 10; i++ ){
-			String tweet = tweetList.get(i);
-			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(tweet,"UTF-8")) == sentiment )
-				list.add(tweet);
+		Set<String> keySet = tweetList.keySet();
+		List<String> keyList = new ArrayList<String>(keySet);
+		
+		int count = 0;
+		
+		for(int i=0; i<keyList.size() && count<10 ; i++){
+			count++;
+			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == sentiment)
+					list.put(keyList.get(i), tweetList.get(keyList.get(i)));
 		}
 		
 		return list;
+	}
+	public static String getSentimentNumbers(String partyName, int sentiment, int tweet_from) throws TwitterException, ClientProtocolException, IOException{
+		//Sentiment: 0 for positive, 1 for negative and 2 for neutral
+		//tweet_from: 0 for public and 1 for junta
+		HashMap<String, List<String>> tweetList = null;
+		
+		if(tweet_from == 0)
+			tweetList = getPublicTweets(partyName);
+		else
+			tweetList = getCriticTweets(partyName);
+		
+		HashMap<String, List<String>> list = new HashMap();
+		
+		Set<String> keySet = tweetList.keySet();
+		List<String> keyList = new ArrayList<String>(keySet);
+		
+		int count = 0;
+		
+		for(int i=0; i<keyList.size() && count<10 ; i++){
+			count++;
+			if(SentiAnalysisCalls.getSentiAnalysis(URLEncoder.encode(keyList.get(i),"UTF-8")) == sentiment)
+					list.put(keyList.get(i), tweetList.get(keyList.get(i)));
+		}
+		
+		return null;
+	}
+	public int countTweets(String partyName, int sentiment, int tweet_from){
+		int sentiments = 0;
+		return sentiments;
 	}
 	
 	public static void updateHashTagMap(){
@@ -121,10 +150,18 @@ public class UpdateTweetData {
 		userNameMapping.add("ndtv");
 	}
 	
+	public static String getSentimentNumbers(String partyName){
+		int [] count = new int[6];
+		for(int i=0; i<6; i++){
+			//HashMap<String, List<String>> map = getTweetsWithSentiment(partyName, )
+		}
+		return null;
+	}
+	
 	public static void main(String args[]) throws TwitterException, ClientProtocolException, IOException {
 		updateHashTagMap();
 		updateUserNameMapping();
-		System.out.println(getCriticTweets("bjp"));
+		System.out.println(getTweetsWithSentiment("bjp",0,0));
 	}
 	
 }
