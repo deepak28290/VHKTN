@@ -28,9 +28,9 @@ public class TwitterApiCalls {
 	static String access_token="89261937-BIF7heMBid1BsT9VUyMqSYqfCFrLEYn8abUrnBQcJ";
 	static String access_token_secret="w80wq8XLz3LrxAG2y1WrgQz73YZCGyVkyOfURGa5NiJyJ";
 	
-	static List<String> bjpHashTags = Arrays.asList("modi", "bjp");//, "How", "Are", "You");
-	static List<String> aapHashTags = Arrays.asList("aap", "kejriwal");//, "How", "Are", "You");
-	static List<String> congHashTags = Arrays.asList("congress", "rahul");//, "How", "Are", "You");
+	static List<String> bjpHashTags = Arrays.asList("modi", "bjp");
+	static List<String> aapHashTags = Arrays.asList("aap", "kejriwal");
+	static List<String> congHashTags = Arrays.asList("congress", "rahul");
 	
 	static List<String> criticHandles =Arrays.asList("sardesairajdeep", "aajtak");//, "StarNews", "ndtv", "ibnlive");
 	
@@ -90,12 +90,22 @@ public class TwitterApiCalls {
 		  .setOAuthConsumerSecret(consumer_secret)
 		  .setOAuthAccessToken(access_token)
 		  .setOAuthAccessTokenSecret(access_token_secret);
+		Query query= new Query(hash);
+		query.setCount(100);
 		TwitterFactory tf = new TwitterFactory(cb.build());
 		Twitter twitter = tf.getInstance();
-		Paging page = new Paging (1, 100);
-		System.out.println(hash);
-		QueryResult result = twitter.search(new Query("#"+hash));
-		List<Status> statuses = result.getTweets();
+		//Paging page = new Paging (1, 1500);
+		QueryResult result = twitter.search(query);
+		List<Status> statuses = new ArrayList<Status>();
+		statuses.addAll(result.getTweets());
+		query=result.nextQuery();
+		int counter=0;
+		while(query!=null || counter==10){
+			result=twitter.search(query);
+			statuses.addAll(result.getTweets());
+			query=result.nextQuery();
+			counter++;
+		}
 		/*HashMap<String,String> tweets=new HashMap();
 	    for (Status status : statuses) {
 	    	//System.out.println(status.getUser().getName() + ":" +  status.getText()+":https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
@@ -108,7 +118,7 @@ public class TwitterApiCalls {
 			List<String> list=new ArrayList<String>();
 			
 			//System.out.println(status.getUser().getScreenName() + ":" +  status.getCreatedAt()+":"+status.getText()+":https://twitter.com/"+username+"/status/"+status.getId());
-			System.out.println(String.valueOf(status.getCreatedAt().getTime()));
+		//	System.out.println(String.valueOf(status.getCreatedAt().getTime()));
 			list.add(String.valueOf(status.getCreatedAt().getTime()));
 			list.add("https://twitter.com/"+status.getUser().getScreenName()+"/status/"+status.getId());
 			tweets.put(status.getText(), list);
